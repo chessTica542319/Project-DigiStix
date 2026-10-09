@@ -42,6 +42,7 @@ class StaffManagementTests(unittest.TestCase):
             db.session.remove()
             db.drop_all()
             db.session.remove()
+            db.engine.dispose()
 
     def get_csrf_token(self, path="/login"):
         response = self.client.get(path)

@@ -36,3 +36,4 @@ Thumbs.db
 
 # PostgreSQL local data
 pgdata/
+/instance/uploads/

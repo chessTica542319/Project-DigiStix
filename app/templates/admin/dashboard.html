@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | DigiStix{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<p>Welcome to DigiStix management.</p>
+
+<section>
+    <h3>Activities</h3>
+    <p>Total activities: {{ activity_count }}</p>
+    <p>Published: {{ published_count }}</p>
+    <p>Drafts: {{ draft_count }}</p>
+    <p><a href="{{ url_for('admin.activities') }}">Manage Activities</a></p>
+</section>
+
+{% if current_user.has_role('admin') %}
+<section>
+    <h3>Staff</h3>
+    <p><a href="{{ url_for('admin.staff') }}">Manage Staff Accounts</a></p>
+</section>
+{% endif %}
+{% endblock %}

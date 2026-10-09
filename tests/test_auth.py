@@ -49,6 +49,7 @@ class AuthenticationTests(unittest.TestCase):
             db.session.remove()
             db.drop_all()
             db.session.remove()
+            db.engine.dispose()
 
     def get_csrf_token(self, path="/login"):
         response = self.client.get(path)
@@ -124,6 +125,58 @@ class AuthenticationTests(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_login_rejects_external_next_url(self):
+        login_page = self.client.get(
+            "/login?next=https://evil.example"
+        )
+
+        match = re.search(
+            rb'name="csrf_token"\s+value="([^"]+)"',
+            login_page.data,
+        )
+        self.assertIsNotNone(match)
+
+        response = self.client.post(
+            "/login?next=https://evil.example",
+            data={
+                "username": "test_admin",
+                "password": "test-password-123",
+                "csrf_token": match.group(1).decode(),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            "/admin/",
+        )
+
+    def test_login_allows_safe_internal_next_url(self):
+        login_page = self.client.get(
+            "/login?next=/admin/staff"
+        )
+
+        match = re.search(
+            rb'name="csrf_token"\s+value="([^"]+)"',
+            login_page.data,
+        )
+        self.assertIsNotNone(match)
+
+        response = self.client.post(
+            "/login?next=/admin/staff",
+            data={
+                "username": "test_admin",
+                "password": "test-password-123",
+                "csrf_token": match.group(1).decode(),
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            "/admin/staff",
+        )
 
 
 if __name__ == "__main__":

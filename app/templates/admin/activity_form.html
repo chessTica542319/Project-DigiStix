@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} · DigiStix{% endblock %}
+
+{% block content %}
+<h2>{{ page_title }}</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="description" id="description">
+
+    <p>
+        <label for="title">Activity title</label><br>
+        <input id="title" name="title" maxlength="200" required
+               value="{{ form_data.get('title', activity.title if activity else '') }}">
+    </p>
+
+    <p>
+        <label for="activity_type">Activity type</label><br>
+        <input id="activity_type" name="activity_type" maxlength="100"
+               value="{{ form_data.get('activity_type', activity.activity_type if activity else '') }}">
+    </p>
+
+    <p>
+        <label for="location">Location</label><br>
+        <input id="location" name="location" maxlength="200"
+               value="{{ form_data.get('location', activity.location if activity else '') }}">
+    </p>
+
+    <p>
+        <label for="activity_date">Activity date</label><br>
+        <input type="date" id="activity_date" name="activity_date" required
+               value="{{ form_data.get('activity_date', activity.activity_date.isoformat() if activity and activity.activity_date else '') }}">
+    </p>
+
+    <p>
+        <label for="photo_filename">Legacy photo filename (optional)</label><br>
+        <input id="photo_filename" name="photo_filename" maxlength="255"
+               value="{{ form_data.get('photo_filename', activity.photo_filename if activity else '') }}">
+        <small>For new photos, use the attachment uploader below.</small>
+    </p>
+
+    <p><strong>Description</strong></p>
+    <textarea id="initial-description" hidden>{{ form_data.get('description', activity.description if activity else '') }}</textarea>
+    <div id="editor" style="min-height:220px;background:white;color:#111"></div>
+
+    <p>
+        <label for="attachments">Photos, documents, or videos</label><br>
+        <input type="file" id="attachments" name="attachments" multiple
+               accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.doc,.docx,.txt,.mp4,.webm">
+        <small>
+            Images and documents: up to 10 MB each. Videos: up to 100 MB each.
+            Allowed: PNG, JPG, GIF, WebP, PDF, DOC, DOCX, TXT, MP4, WebM.
+        </small>
+    </p>
+
+    <p>
+        <button type="submit">Save activity</button>
+        <a href="{{ url_for('admin.activities') }}">Cancel</a>
+    </p>
+</form>
+
+    {% if attachments %}
+    <h3>Existing attachments</h3>
+    <ul>
+        {% for item in attachments %}
+        <li>
+            {{ item.original_filename }} ({{ (item.file_size / 1024)|round|int }} KB)
+            <form method="POST"
+                  action="{{ url_for('admin.delete_attachment', attachment_id=item.id) }}"
+                  style="display:inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">Remove</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<script>
+(() => {
+    const quill = new Quill("#editor", {
+        theme: "snow",
+        modules: {
+            toolbar: [
+                [{ header: [1, 2, 3, false] }],
+                ["bold", "italic", "underline"],
+                [{ list: "ordered" }, { list: "bullet" }],
+                ["blockquote", "code-block", "link"],
+                ["clean"]
+            ]
+        }
+    });
+
+    const initial = document.getElementById("initial-description").value;
+    if (initial) quill.clipboard.dangerouslyPasteHTML(initial);
+
+    document.querySelector("form[enctype='multipart/form-data']")
+        .addEventListener("submit", () => {
+            document.getElementById("description").value = quill.root.innerHTML;
+        });
+})();
+</script>
+{% endblock %}

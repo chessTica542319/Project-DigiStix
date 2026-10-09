@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Activities · DigiStix{% endblock %}
+
+{% block content %}
+<h2>Campus Activities</h2>
+<p>Discover activities and events organized by DigiStix.</p>
+
+{% if activities %}
+    {% for activity in activities %}
+    <article style="border:1px solid #ccc;border-radius:10px;padding:16px;margin:16px 0">
+        <h3>{{ activity.title }}</h3>
+        <p>
+            <strong>Date:</strong> {{ activity.activity_date.strftime("%B %d, %Y") }}
+            {% if activity.activity_type %} · {{ activity.activity_type }}{% endif %}
+        </p>
+        {% if activity.location %}
+        <p><strong>Location:</strong> {{ activity.location }}</p>
+        {% endif %}
+
+        {% if activity.description %}
+        <div class="activity-description">{{ activity.safe_description|safe }}</div>
+        {% endif %}
+
+        {% for item in attachments_by_activity.get(activity.id, []) %}
+            {% if item.media_type == "image" %}
+                <p>
+                    <img
+                        src="{{ url_for('public.activity_attachment', attachment_id=item.id) }}"
+                        alt="{{ item.original_filename }}"
+                        loading="lazy"
+                        style="max-width:100%;height:auto;max-height:500px"
+                    >
+                </p>
+            {% elif item.media_type == "video" %}
+                <p><strong>{{ item.original_filename }}</strong></p>
+                <video controls preload="metadata" style="max-width:100%;width:640px">
+                    <source
+                        src="{{ url_for('public.activity_attachment', attachment_id=item.id) }}"
+                        type="{{ item.mime_type }}"
+                    >
+                    Your browser does not support this video.
+                </video>
+            {% else %}
+                <p>
+                    <a href="{{ url_for('public.activity_attachment', attachment_id=item.id) }}">
+                        Download {{ item.original_filename }}
+                    </a>
+                </p>
+            {% endif %}
+        {% endfor %}
+    </article>
+    {% endfor %}
+{% else %}
+    <p>No published activities yet. Please check back later.</p>
+{% endif %}
+{% endblock %}
