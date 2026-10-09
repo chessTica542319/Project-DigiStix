@@ -127,7 +127,7 @@ The repository is designed so that the project can be cloned to another computer
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/chessTica542319/Project-DigiStix.git
 cd Project-DigiStix
 ```
 
