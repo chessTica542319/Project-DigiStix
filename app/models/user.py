@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone
 
 from flask_login import UserMixin
@@ -10,11 +9,23 @@ from app import db
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
+    ROLE_ADMIN = "admin"
+    ROLE_EDITOR = "editor"
+    VALID_ROLES = (ROLE_ADMIN, ROLE_EDITOR)
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="editor")
-    is_active_account = db.Column(db.Boolean, nullable=False, default=True)
+    role = db.Column(
+        db.String(20),
+        nullable=False,
+        default=ROLE_EDITOR,
+    )
+    is_active_account = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=True,
+    )
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
@@ -27,6 +38,12 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def has_role(self, *roles):
+        return self.role in roles
+
     @property
     def is_active(self):
         return self.is_active_account
+
+    def __repr__(self):
+        return f"<User {self.username} ({self.role})>"

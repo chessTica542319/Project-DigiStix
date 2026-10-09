@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Management | DigiStix{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Staff Management</h1>
+    <p>Create staff accounts and review existing account roles.</p>
+
+    <h2>Create Staff Account</h2>
+
+    <form method="POST" action="{{ url_for('admin.staff') }}">
+        <div>
+            <label for="username">Username</label>
+            <input
+                id="username"
+                name="username"
+                type="text"
+                maxlength="80"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="password">Temporary password</label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                minlength="12"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="role">Role</label>
+            <select id="role" name="role" required>
+                <option value="editor">Editor</option>
+                <option value="admin">Administrator</option>
+            </select>
+        </div>
+
+        <button type="submit">Create Account</button>
+    </form>
+</section>
+
+<section>
+    <h2>Existing Accounts</h2>
+
+    {% if users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Account Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff_user in users %}
+                    <tr>
+                        <td>{{ staff_user.id }}</td>
+                        <td>{{ staff_user.username }}</td>
+                        <td>{{ staff_user.role }}</td>
+                        <td>
+                            {{ "Active" if staff_user.is_active else "Inactive" }}
+                        </td>
+                        <td>
+                            {{ staff_user.created_at.strftime("%Y-%m-%d") }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No staff accounts found.</p>
+    {% endif %}
+</section>
+{% endblock %}
