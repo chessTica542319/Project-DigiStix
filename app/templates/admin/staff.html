@@ -10,6 +10,8 @@
     <h2>Create Staff Account</h2>
 
     <form method="POST" action="{{ url_for('admin.staff') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <div>
             <label for="username">Username</label>
             <input
@@ -32,15 +34,9 @@
             >
         </div>
 
-        <div>
-            <label for="role">Role</label>
-            <select id="role" name="role" required>
-                <option value="editor">Editor</option>
-                <option value="admin">Administrator</option>
-            </select>
-        </div>
+        <input type="hidden" name="role" value="editor">
 
-        <button type="submit">Create Account</button>
+        <button type="submit">Create Editor Account</button>
     </form>
 </section>
 
@@ -67,9 +63,7 @@
                         <td>
                             {{ "Active" if staff_user.is_active else "Inactive" }}
                         </td>
-                        <td>
-                            {{ staff_user.created_at.strftime("%Y-%m-%d") }}
-                        </td>
+                        <td>{{ staff_user.created_at.strftime("%Y-%m-%d") }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

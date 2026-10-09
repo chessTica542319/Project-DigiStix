@@ -20,8 +20,9 @@
                 {% endif %}
 
                 <form method="POST" action="{{ url_for('auth.logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit">Log out</button>
-                </form>
+                </form> 
             {% else %}
                 <a href="{{ url_for('auth.login') }}">Log in</a>
             {% endif %}
@@ -43,7 +44,7 @@
     </main>
 
     <footer>
-        <p>&copy; {{ now().year if now is defined else 2026 }} DigiStix</p>
+        <p>&copy; 2026 DigiStix</p>
     </footer>
 </body>
 </html>

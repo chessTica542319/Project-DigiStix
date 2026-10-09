@@ -29,13 +29,15 @@ def staff():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+
+
         role = request.form.get("role", User.ROLE_EDITOR).strip()
+
+        if role != User.ROLE_EDITOR:
+            abort(400, description="Only editor accounts can be created here.")
 
         if not username or len(username) > 80:
             abort(400, description="Username must be between 1 and 80 characters.")
-
-        if role not in User.VALID_ROLES:
-            abort(400, description="Invalid staff role.")
 
         if len(password) < 12:
             abort(400, description="Password must contain at least 12 characters.")

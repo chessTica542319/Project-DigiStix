@@ -1,18 +1,26 @@
+# app/__init__.py
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+csrf = CSRFProtect()
 
 
-def create_app():
+def create_app(test_config=None):
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
+    # Apply test configuration BEFORE initializing extensions.
+    if test_config:
+        app.config.update(test_config)
+
     db.init_app(app)
     login_manager.init_app(app)
+    csrf.init_app(app)
 
     login_manager.login_view = "auth.login"
     login_manager.login_message_category = "warning"
