@@ -4,15 +4,15 @@
 
 ## About
 
-**Project DigiStix** is a web-based information and documentation system designed to organize and present important information about a campus organization in one centralized application.
+**Project DigiStix** is a web-based information and documentation system designed to organize and present important information about a campus organization through a centralized application.
 
-Instead of manually editing HTML files whenever organization information changes, DigiStix is being developed as a **dynamic system** where authorized users can manage information through the application.
+Instead of manually editing HTML files whenever organization information changes, DigiStix uses a dynamic web application where authorized personnel can manage information through administrative pages.
 
-The project is intended to make organization information easier to maintain, update, and access while keeping the system simple enough for students and organization personnel to use.
+The project aims to make organization information easier to maintain, update, and access while keeping the system practical for students and organization personnel.
 
 ## Purpose
 
-DigiStix aims to provide a centralized platform for managing and presenting organization information such as:
+DigiStix aims to provide a centralized platform for managing and presenting:
 
 * Organization structure and members
 * Officers and advisers
@@ -21,13 +21,44 @@ DigiStix aims to provide a centralized platform for managing and presenting orga
 * Accomplishment reports
 * Inventory and equipment records
 * Organization activities
-* Supporting documentation and information
+* Supporting documents and attachments
 
-The system is being developed as a campus-oriented project and is not intended to replace official university record-keeping systems.
+The system is being developed as a campus-oriented academic project and is not intended to replace official university record-keeping systems.
+
+## Features
+
+### Public Information
+
+* View published organization activities.
+* Access available activity information and supporting attachments.
+* Browse information presented through the public-facing website.
+
+### Authentication and Access Control
+
+* User authentication through Flask-Login.
+* Restricted access to staff and administrative functionality.
+* Separation between public-facing pages and authorized management pages.
+
+### Activity Management
+
+* Create and edit organization activities.
+* Publish and unpublish activities.
+* Upload and manage activity attachments.
+* Remove activities and their associated attachment records.
+* Sanitize activity descriptions before displaying submitted HTML content.
+
+### Configuration and Security
+
+* Environment-based application secret configuration.
+* Local upload storage excluded from Git.
+* Attachment validation and access restrictions.
+* Automated tests for authentication and staff access controls.
+
+*Note: Features should be considered implemented only to the extent verified in the current application. Additional organization modules may still be under development.*
 
 ## How It Works
 
-The planned system follows a traditional web application architecture:
+The application follows a traditional web architecture:
 
 ```text
 User
@@ -38,151 +69,174 @@ HTML / CSS / JavaScript
  ▼
 Flask Application
  │
+ ├── Authentication and Access Control
+ ├── Public Routes
+ └── Administrative Routes
+ │
  ▼
-SQLAlchemy
+SQLAlchemy ORM
  │
  ▼
 PostgreSQL Database
 ```
 
-The frontend is responsible for displaying information and interacting with users, while Flask handles the application logic and SQLAlchemy communicates with the PostgreSQL database.
+Flask handles request processing and application logic. SQLAlchemy provides database integration, while PostgreSQL stores relational application data.
+
+Activity attachment files are stored in the configured local upload directory.
 
 ## Technology Stack
 
-| Technology       | Purpose                      |
-| ---------------- | ---------------------------- |
-| HTML5            | Page structure               |
-| CSS3             | Styling and layout           |
-| JavaScript       | Frontend interactions        |
-| Python           | Backend programming          |
-| Flask            | Web application framework    |
-| Flask-SQLAlchemy | Database integration         |
-| Flask-Login      | User authentication          |
-| PostgreSQL       | Relational database          |
-| Psycopg 3        | PostgreSQL database driver   |
-| python-dotenv    | Environment configuration    |
-| Git              | Version control              |
-| GitHub           | Repository and collaboration |
+| Technology       | Purpose                   |
+| ---------------- | ------------------------- |
+| HTML5            | Page structure            |
+| CSS3             | Styling and layout        |
+| JavaScript       | Frontend interactions     |
+| Python           | Backend programming       |
+| Flask            | Web application framework |
+| Flask-SQLAlchemy | Database integration      |
+| Flask-Login      | User authentication       |
+| PostgreSQL       | Relational database       |
+| Psycopg 3        | PostgreSQL driver         |
+| python-dotenv    | Environment configuration |
+| Bleach           | HTML sanitization         |
+| pytest           | Automated testing         |
+| Git              | Version control           |
+| GitHub           | Repository hosting        |
 
 ## Project Structure
 
 ```text
 Project-DigiStix/
-│
 ├── app/
 │   ├── models/
-│   │   ├── user.py
-│   │   ├── officer.py
-│   │   ├── adviser.py
-│   │   ├── founding_member.py
-│   │   ├── target_plan.py
-│   │   ├── accomplishment.py
-│   │   ├── inventory.py
-│   │   └── activity.py
-│   │
 │   ├── routes/
 │   │   ├── public.py
 │   │   ├── auth.py
 │   │   └── admin.py
-│   │
 │   ├── templates/
-│   └── static/
-│
+│   │   └── admin/
+│   ├── static/
+│   └── content.py
 ├── migrations/
 ├── tests/
 ├── instance/
-│
+│   └── uploads/
 ├── config.py
 ├── run.py
 ├── requirements.txt
-├── .env
+├── .env                 # Local configuration; do not commit
 ├── .gitignore
 └── README.md
 ```
 
-## Authentication
+This is a simplified overview. The exact contents of each directory may change as development continues.
 
-DigiStix is planned to include authentication for authorized personnel.
+## Requirements
 
-Public users will be able to view organization information, while authorized users will be able to manage information through the administrative side of the system.
-
-Sensitive configuration such as database credentials and secret keys should be stored in environment variables and must not be committed to the repository.
-
-## Development
-
-The project is currently being developed using:
+Before running DigiStix, prepare:
 
 * Python
-* Flask
 * PostgreSQL
-* SQLAlchemy
+* A configured database
 * Git
-* Termux for mobile development
-* Desktop environments for additional development and testing
+* The dependencies listed in `requirements.txt`
 
-The repository is designed so that the project can be cloned to another computer and continued by other members of the development team.
+## Installation and Setup
 
-### Running the Project
-
-Clone the repository:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/chessTica542319/Project-DigiStix.git
 cd Project-DigiStix
 ```
 
-Create and activate a virtual environment:
+### 2. Create a virtual environment
 
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
-Install dependencies:
+On Windows, activate the environment using:
 
-```bash
-pip install -r requirements.txt
+```powershell
+venv\Scripts\activate
 ```
 
-Configure the required environment variables, then run:
+### 3. Install dependencies
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a local `.env` file in the project root. Configure the values required by `config.py`, including:
+
+```dotenv
+SECRET_KEY=replace_with_a_secure_random_secret
+DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/database_name
+```
+
+Replace the database connection details with your own PostgreSQL configuration. Use a securely generated secret for `SECRET_KEY`; do not use the example text as the actual secret.
+
+Keep `.env` private and never commit real credentials or secret keys.
+
+### 5. Prepare the database
+
+Ensure PostgreSQL is running and the configured database exists. Apply the project's database migrations if required by the current setup.
+
+### 6. Run the application
 
 ```bash
 python run.py
 ```
 
-## Project Status
+The application's startup behavior and listening address depend on the configuration in the project.
 
-**Current stage:** Initial project foundation
+## Testing
 
-The current foundation includes:
+Run the automated test suite:
 
-* Flask application structure
-* PostgreSQL database setup
-* SQLAlchemy integration
-* Psycopg PostgreSQL driver
-* Flask-Login dependency
-* Environment configuration
-* Git repository setup
+```bash
+python -m pytest -q
+```
 
-Additional database models, routes, authentication functionality, administrative pages, and organization features will be developed progressively.
+Check Python files for compilation errors:
+
+```bash
+python -m compileall -q app tests
+```
+
+The test suite should be rerun after changes to authentication, access control, activity management, or other application features.
 
 ## Development
 
-Project DigiStix is developed as a collaborative academic project.
+DigiStix is developed as a collaborative academic project using Python, Flask, PostgreSQL, and Git.
 
-### Author
+Development and testing have included Termux on Android and desktop environments.
+
+## Project Status
+
+**Current stage: Core application development**
+
+The current implementation includes the Flask application foundation, database integration, authentication and staff access controls, and activity-management functionality with attachment handling.
+
+Further work may include expanding the remaining organization modules, improving validation and usability, conducting additional security tests, and preparing the application for deployment.
+
+## Author
 
 **Sam Ruda**
 
 ### School
 
-**Iloilo State University of Fisheries ,Science and Technology**
+Iloilo State University of Fisheries and Science and Technology
 
 ### Repository
 
-GitHub: **[github.com/chessTica542319](https://github.com/chessTica542319)**
+[github.com/chessTica542319/Project-DigiStix](https://github.com/chessTica542319/Project-DigiStix)
 
 ## License
 
-This project is developed for academic and educational purposes.
+This project is developed for academic and educational purposes. No specific open-source license is declared in this README.
 
