@@ -11,9 +11,12 @@
 
         <nav>
             <a href="{{ url_for('public.index') }}">Home</a>
+            <a href="{{ url_for('public.activities') }}">Activities</a>
 
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+
+                <a href="{{ url_for('admin.activities') }}">Manage Activities</a>
 
                 {% if current_user.has_role('admin') %}
                     <a href="{{ url_for('admin.staff') }}">Staff Management</a>
@@ -22,7 +25,7 @@
                 <form method="POST" action="{{ url_for('auth.logout') }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit">Log out</button>
-                </form> 
+                </form>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">Log in</a>
             {% endif %}

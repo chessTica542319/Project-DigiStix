@@ -6,3 +6,4 @@ from app.models.target_plan import TargetPlan
 from app.models.accomplishment import Accomplishment
 from app.models.inventory import Inventory
 from app.models.activity import Activity
+from app.models.activity_attachment import ActivityAttachment

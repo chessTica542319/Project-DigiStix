@@ -1,10 +1,32 @@
+from urllib.parse import urlsplit
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, current_user
+from flask import (
+    Blueprint,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask_login import current_user, login_user, logout_user
 
 from app.models.user import User
 
+
 auth_bp = Blueprint("auth", __name__)
+
+
+def is_safe_next_url(target):
+    """Allow only local absolute paths as post-login destinations."""
+    if not target or not target.startswith("/"):
+        return False
+
+    if target.startswith("//") or "\\" in target:
+        return False
+
+    parsed = urlsplit(target)
+
+    return not parsed.scheme and not parsed.netloc
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -20,9 +42,10 @@ def login():
 
         if user and user.check_password(password) and user.is_active:
             login_user(user)
+
             next_page = request.args.get("next")
 
-            if next_page and next_page.startswith("/") and not next_page.startswith("//"):
+            if is_safe_next_url(next_page):
                 return redirect(next_page)
 
             return redirect(url_for("admin.dashboard"))
